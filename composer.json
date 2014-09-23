@@ -1,0 +1,24 @@
+{
+    "name": "kf/kitbundle",
+    "description": "Things for rapid development on Symfony2",
+    "keywords": ["symfony","rad"],
+    "type": "symfony-bundle",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Marino Di Clemente",
+            "email": "marino@kfinformatica.it"
+        }
+    ],
+    "require": {
+        "symfony/framework-bundle": "2.*",
+        "doctrine/doctrine-bundle": "*"
+    },
+    "suggest": {
+        "stof/doctrine-extensions-bundle": "dev-master"
+    },
+    "autoload": {
+        "psr-0": { "Kf\\KitBundle": "" }
+    },
+    "target-dir": "Kf/KitBundle"
+}
