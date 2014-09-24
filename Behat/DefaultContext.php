@@ -115,7 +115,7 @@ abstract class DefaultContext extends RawMinkContext implements Context, KernelA
      */
     protected function getRepository($resource)
     {
-        return $this->getService('sylius.repository.'.$resource);
+        return $this->getEntityManager()->getRepository($resource);
     }
 
     /**
@@ -151,44 +151,6 @@ abstract class DefaultContext extends RawMinkContext implements Context, KernelA
     }
 
     /**
-     * Configuration converter.
-     *
-     * @param string $configurationString
-     *
-     * @return array
-     */
-    protected function getConfiguration($configurationString)
-    {
-        $configuration = array();
-        $list = explode(',', $configurationString);
-
-        foreach ($list as $parameter) {
-            list($key, $value) = explode(':', $parameter);
-            $key = strtolower(trim(str_replace(' ', '_', $key)));
-
-            switch ($key) {
-                case 'country':
-                    $configuration[$key] = $this->getRepository('country')->findOneBy(array('name' => trim($value)))->getId();
-                    break;
-
-                case 'taxons':
-                    $configuration[$key] = new ArrayCollection(array($this->getRepository('taxon')->findOneBy(array('name' => trim($value)))->getId()));
-                    break;
-
-                case 'variant':
-                    $configuration[$key] = $this->getRepository('product')->findOneBy(array('name' => trim($value)))->getMasterVariant()->getId();
-                    break;
-
-                default:
-                    $configuration[$key] = trim($value);
-                    break;
-            }
-        }
-
-        return $configuration;
-    }
-
-    /**
      * Generate page url.
      * This method uses simple convention where page argument is prefixed
      * with "sylius_" and used as route name passed to router generate method.
@@ -206,14 +168,6 @@ abstract class DefaultContext extends RawMinkContext implements Context, KernelA
 
         $route  = str_replace(' ', '_', trim($page));
         $routes = $this->getContainer()->get('router')->getRouteCollection();
-
-        if (null === $routes->get($route)) {
-            $route = 'sylius_'.$route;
-        }
-
-        if (null === $routes->get($route)) {
-            $route = str_replace('sylius_', 'sylius_backend_', $route);
-        }
 
         $route = str_replace(array_keys($this->actions), array_values($this->actions), $route);
         $route = str_replace(' ', '_', $route);

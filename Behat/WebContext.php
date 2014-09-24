@@ -24,6 +24,8 @@ use Symfony\Component\Security\Core\Exception\AuthenticationException;
  */
 class WebContext extends DefaultContext
 {
+    const LOGIN_BUTTON_TEXT = 'login';
+
     /**
      * @Then /^the page title should be "([^""]*)"$/
      */
@@ -46,7 +48,7 @@ class WebContext extends DefaultContext
      */
     public function iAmOnThePage($page)
     {
-        $this->getSession()->visit($this->generatePageUrl($page));
+        $this->getSession()->visit(strpos($page, '/')=== false ? $this->generatePageUrl($page) : $page );
     }
 
     /**
@@ -126,7 +128,7 @@ class WebContext extends DefaultContext
 
         $this->fillField('Email', $email);
         $this->fillField('Password', $password);
-        $this->pressButton('login');
+        $this->pressButton(static::LOGIN_BUTTON_TEXT);
     }
 
     /**
