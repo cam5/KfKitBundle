@@ -11,6 +11,7 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class AbstractFixture extends BaseFixture implements ContainerAwareInterface
 {
+    protected $entityClass;
 
     /**
      * @var ContainerInterface
@@ -70,7 +71,10 @@ class AbstractFixture extends BaseFixture implements ContainerAwareInterface
 
     protected function getEntityClass()
     {
-        return static::ENTITY_CLASS;
+        if(!isset($this->entityClass)){
+            throw new \Exception('please define entityClass');
+        }
+        return $this->entityClass;
     }
 
     protected function getYamlFileName()
@@ -88,7 +92,7 @@ class AbstractFixture extends BaseFixture implements ContainerAwareInterface
         $fullname = $path . $filename;
         return new UploadedFile(
             $fullname, $filename,
-            finfo_file( finfo_open( FILEINFO_MIME_TYPE ), $fullname );,
+            finfo_file( finfo_open( FILEINFO_MIME_TYPE ), $fullname ),
             filesize($fullname),
             null
         );
