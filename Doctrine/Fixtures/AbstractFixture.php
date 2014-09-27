@@ -8,6 +8,7 @@ use Doctrine\Common\Persistence\ObjectManager;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\Yaml\Yaml;
 
 class AbstractFixture extends BaseFixture implements ContainerAwareInterface
 {
@@ -49,20 +50,23 @@ class AbstractFixture extends BaseFixture implements ContainerAwareInterface
         $this->execute();
     }
 
-    protected function processYamlFixtures($class, $fileName)
+    protected function processFixtures($class, $fileName)
     {
         if (!file_exists($fileName)) {
-            return [];
+            throw new \Exception($fileName.' fixtures file not found');
         }
-        $obj = new YamlFixturesProcessor($this);
+        $data = Yaml::parse(file_get_contents($fileName));
+        if(!isset($data['class']))
+            $data['class'] = $class;
+        $obj = new FixturesProcessor($this);
 
-        return $obj->execute($class, $fileName);
+        return $obj->execute($data);
     }
 
     public function execute()
     {
         $manager = $this->manager;
-        $items   = $this->processYamlFixtures($this->getEntityClass(), $this->getYamlFileName());
+        $items   = $this->processFixtures($this->getEntityClass(), $this->getYamlFileName());
         foreach ($items as $item) {
             $manager->persist($item);
         }

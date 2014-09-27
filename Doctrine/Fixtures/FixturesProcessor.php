@@ -4,53 +4,53 @@
 namespace Kf\KitBundle\Doctrine\Fixtures;
 
 use Symfony\Component\PropertyAccess\PropertyAccess;
-use Symfony\Component\Yaml\Yaml;
-use Doctrine\Common\Persistence\Mapping\MappingException;
 use Kf\KitBundle\Utils\StringUtils;
 
-class YamlFixturesProcessor
+class FixturesProcessor
 {
     protected $accessor;
 
     public function __construct(AbstractFixture $loader)
     {
-        $this->accessor = PropertyAccess::createPropertyAccessor();
+        $this->accessor = PropertyAccess::createPropertyAccessorBuilder()
+            ->enableMagicCall()
+            ->enableExceptionOnInvalidIndex()
+            ->getPropertyAccessor();
         $this->loader   = $loader;
     }
 
-    public function execute($class, $fileName)
+    public function execute($data)
     {
-        $data   = Yaml::parse(file_get_contents($fileName));
-        if(isset($data['file'])){
-            return $this->execute($class,dirname($fileName).$data['file']);
-        }
-        $items  = [];
-        $common = isset($data['common']) ? $data['common'] : null;
-        foreach ($data['items'] as $k => $v) {
-            try {
-                $items[] = $this->createItem($class, $k, $v, $common);
-            } catch (MappingException $e) {
-                ;
+        $items        = [];
+        $commonValues = isset($data['common']) ? $data['common'] : [];
+        foreach ($data['items'] as $reference => $values) {
+            $construct = isset($values['__construct']) ? $values['__construct'] : [];
+            $obj       = $this->createObject($data['class'], $construct);
+            $this->bindValues($obj, $commonValues);
+            $this->bindValues($obj, $values);
+            if (!is_numeric($reference)) {
+                $this->loader->setReference($reference, $obj);
             }
+            $items[] = $obj;
         }
 
         return $items;
     }
 
-    private function createItem($class, $reference, $values, $commonValues = null)
+    private function bindValues($obj, $values = null)
     {
-        $ret = new $class();
-        if (isset($commonValues)) {
-            foreach ($commonValues as $kk => $vv) {
-                $this->addValue($ret, $kk, $vv);
-            }
+        if (isset($values['__construct'])) {
+            unset($values['__construct']);
         }
         foreach ($values as $kk => $vv) {
-            $this->addValue($ret, $kk, $vv);
+            $this->addValue($obj, $kk, $vv);
         }
-        if (!is_numeric($reference)) {
-            $this->loader->setReference($reference, $ret);
-        }
+    }
+
+    private function createObject($class, $construct)
+    {
+        $class = new \ReflectionClass($class);
+        $ret   = $class->newInstanceArgs($this->getValue($construct));
 
         return $ret;
     }
@@ -65,6 +65,9 @@ class YamlFixturesProcessor
     private function getValue($vv)
     {
         if (is_array($vv)) {
+            if (isset($vv['@mode']) && $vv['@mode'] == 'recursive') {
+                return $this->execute($vv);
+            }
             foreach ($vv as $k => $v) {
                 $vv[$k] = $this->getValue($v);
             }
