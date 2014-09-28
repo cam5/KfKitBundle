@@ -7,8 +7,9 @@
     </parameters>
 
     <services>
-        <service id="kfi_kit.knp_pagination.builder" class="%kfi_kit.knp_pagination.builder.class%">
+        <service id="kfi_kit.knp_pagination.builder" scope="request" class="%kfi_kit.knp_pagination.builder.class%">
             <argument type="service" id="knp_paginator" />
+            <argument type="service" id="request" />
         </service>
         <service id="kit.pagination" alias="kfi_kit.knp_pagination.builder" />
     </services>

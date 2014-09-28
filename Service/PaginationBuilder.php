@@ -4,7 +4,6 @@ namespace Kf\KitBundle\Service;
 
 use Knp\Bundle\PaginatorBundle\Pagination\SlidingPagination;
 use Knp\Component\Pager\Paginator;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
 
 class PaginationBuilder
@@ -14,11 +13,13 @@ class PaginationBuilder
 
     protected $target;
     protected $paginator;
+    protected $request;
     protected $route;
 
-    public function __construct(Paginator $paginator)
+    public function __construct(Paginator $paginator, Request $request)
     {
         $this->setPaginator($paginator);
+        $this->setRequest($request);
     }
 
     /**
@@ -27,8 +28,9 @@ class PaginationBuilder
      *
      * @return SlidingPagination
      */
-    public function createStandardPagination(Request $req, $target)
+    public function createPagination($target)
     {
+        $req = $this->request;
         $path   = $this->evalRoute($req->get('_route'));
         $routes = $req->get('_route_params');
 
@@ -82,14 +84,6 @@ class PaginationBuilder
         $this->paginator = $paginator;
 
         return $this;
-    }
-
-    /**
-     * @return PaginationHelper
-     */
-    static public function create()
-    {
-        return new static();
     }
 
     /**
@@ -156,5 +150,21 @@ class PaginationBuilder
     public function getRoutePagedSuffix()
     {
         return $this->routePagedSuffix;
+    }
+
+    /**
+     * @param mixed $request
+     */
+    public function setRequest($request)
+    {
+        $this->request = $request;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getRequest()
+    {
+        return $this->request;
     }
 }
