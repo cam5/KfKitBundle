@@ -16,19 +16,18 @@ class MenuBuilder
     /** @var  ContainerInterface */
     private $container;
 
-    public function __construct(FactoryInterface $factory, MatcherInterface $matcher, ContainerInterface $container, $menu)
+    public function __construct(FactoryInterface $factory, MatcherInterface $matcher, ContainerInterface $container)
     {
         $this->factory = $factory;
-        $this->menu    = $menu;
         $this->matcher = $matcher;
         $this->container = $container;
     }
 
-    public function createMenu($name)
+    public function createMenu($name, $data)
     {
         return $this->bindMenuItem(
             $name,
-            $this->menu[$name]
+            $data
         );
     }
 
