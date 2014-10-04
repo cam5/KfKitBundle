@@ -5,7 +5,7 @@
     </div>
 {% endmacro %}
 
-{% macro flashalerts(messages) %}
+{% macro flashes(messages) %}
     {% for type in ['error', 'warning', 'success', 'info'] %}
         {% for key in app.session.flashbag.get('alert-' ~ type) %}
             {% if messages[key] is defined %}

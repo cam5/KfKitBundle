@@ -39,14 +39,14 @@ class QueryBuilderUtils
                 foreach ($fields as $field) {
                     $rules[] = $x->like($field, $w);
                 }
-                $query->andWhere(self::mergeArrayOfRules($rules, SQLUtils::OP_OR));
+                $query->andWhere(self::mergeArrayOfRules($rules, self::_OR));
             } else {
                 $query->andWhere($x->like($fields, $w));
             }
         }
     }
 
-    public static function mergeArrayOfRules($rules, $mode = SQLUtils::OP_AND)
+    public static function mergeArrayOfRules($rules, $mode = self::_AND)
     {
         return '(' . implode(' ' . $mode . ' ', $rules) . ')';
     }

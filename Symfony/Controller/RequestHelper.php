@@ -6,11 +6,11 @@ trait RequestHelper{
     /**
      * returns true after a standard form bind/validation
      *
-     * @param FormInterface $form
+     * @param \Symfony\Component\Form\FormInterface $form
      *
      * @return bool
      */
-    public function isFormValid(FormInterface $form)
+    public function isFormValid(\Symfony\Component\Form\FormInterface $form)
     {
         $req = $this->getRequest();
 
@@ -50,7 +50,7 @@ trait RequestHelper{
      */
     public function isResponse($data)
     {
-        return $data instanceof Response;
+        return $data instanceof \Symfony\Component\HttpFoundation\Response;
     }
 
 }
