@@ -1,5 +1,4 @@
 KfKitBundle
 ======
 
-it's just a bundle with my preferred things
-
+A bundle with some useful Behat & DoctrineFixture methods to rapid development.
