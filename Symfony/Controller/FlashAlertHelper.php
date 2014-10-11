@@ -2,7 +2,8 @@
 
 namespace Kf\KitBundle\Symfony\Controller;
 
-trait FlashAlertHelper{
+trait FlashAlertHelper
+{
     /**
      * @param $type
      * @param $text
@@ -11,8 +12,8 @@ trait FlashAlertHelper{
      */
     public function addAlert($type = 'success', $text = null)
     {
-	if(!isset($text)){
-           $text = $this->getRequest()->get('_route').'.'.$type;
+        if (!isset($text)) {
+            $text = $this->getRequest()->get('_route') . '.' . $type;
         }
         /** @var Session $s */
         $s = $this->getRequest()->getSession();

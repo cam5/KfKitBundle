@@ -1,0 +1,17 @@
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <parameters>
+        <parameter key="kfi_kit.knp_menu.builder.class">Kf\KitBundle\Service\MenuBuilder</parameter>
+    </parameters>
+
+    <services>
+        <service id="kfi_kit.mail_dispatcher" class="%kfi_kit.mail_dispatcher.class%">
+            <argument type="service" id="templating" />
+            <argument type="service" id="mailer" />
+        </service>
+        <service id="kit.mail_dispatcher" alias="kfi_kit.mail_dispatcher" />
+    </services>
+</container>
+
