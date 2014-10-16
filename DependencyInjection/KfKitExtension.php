@@ -20,6 +20,7 @@ class KfKitExtension extends Extension
         $modules = array(
             'knp_menu'      => array(),
             'knp_pagination' => array(),
+            'mail_dispatcher' => array(),
         );
 
         foreach ($configs as $config) {

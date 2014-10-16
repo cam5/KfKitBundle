@@ -1,0 +1,21 @@
+{% set mail_mode = mail_mode|default('text/plain') %}
+{% set mail_settings = mail_settings | default({}) %}
+{% if app.request is not null %}
+    {% set siteurl = app.request.scheme ~ '://' ~ app.request.httpHost %}
+{% else %}
+    {% set siteurl = option.site.url %}
+{% endif %}
+{% block all %}
+    {%- if mail_mode == 'settings' -%}
+        {% spaceless %}
+            {{ { 'from': { (option.site.mail): option.site.name } }
+            | merge( mail_settings )
+            | json_encode
+            | raw }}
+        {% endspaceless %}
+    {%- elseif mail_mode == 'text/html' -%}
+        {%- block mail_html %}{% block mail_html_content %}{% endblock %}{% endblock -%}
+    {%- else -%}
+        {%- block mail_txt %}{% block mail_txt_content %}{% endblock %}{% endblock -%}
+    {%- endif -%}
+{% endblock %}
